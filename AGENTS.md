@@ -1,0 +1,33 @@
+# AGENTS.md
+
+## Read first
+
+[`docs/designs/attn.md`](docs/designs/attn.md) is the source of truth for what attn is and how it works: scope, the activity model, attention rules, the provider/Sources architecture, the UI spec and tokens, and every review decision. Read it before changing anything. Supporting docs:
+
+- [`docs/designs/test-plan.md`](docs/designs/test-plan.md): required tests, each with a value card.
+- [`docs/designs/ceo-plan.md`](docs/designs/ceo-plan.md): accepted and deferred scope.
+- [`docs/designs/mockups/`](docs/designs/mockups/): approved mockups. Where a mockup and the plan disagree, the plan wins.
+
+attn is a standalone app for anyone. It is unrelated to any other app, so don't propose integrations with other products unless asked.
+
+## Swift conventions
+
+- **Layout:** `app/` (UI: DockRing, Panel, Sources, Settings, Design), `core/` (Store, IPC, Providers, Hooks, GitHub) and `cli/` (the `attn` command).
+- **State ownership:** the activity store is the only owner of item state. Senders and UI never mutate items directly.
+- **Providers:** every provider is a type conforming to the one `Provider` protocol and registered in the registry. The Sources UI, `attn doctor` and the store use only the protocol, never a specific provider. There is no plugin system; outside apps use the `attn` CLI.
+- **Source identity:** `attn` CLI sources are namespaced `app:<name>`, and built-in provider ids are reserved.
+- **Timers:** snooze, ttl and the banner hold share one deadline queue owned by the store. Liveness uses `SuspendingClock`.
+- **Design tokens:** every size, colour, font and spacing value comes from `app/Design/Tokens.swift`, built on native semantic colours and SF Pro. No hard-coded values in views.
+- **Not yet decided** (settle before the first code commit, and record the answer here):
+  - Swift package or Xcode project
+  - minimum macOS version
+  - linter/formatter
+
+## Tests
+
+- Use Swift Testing.
+- Every test needs a value card (`protects`, `fails_when`, `why_new`, `seam`, `no_claim`), as in the test plan. Don't add a test that no realistic regression would break.
+- **Time:** time-dependent behaviour (snooze, ttl, banner hold, sleep) is tested through an injectable clock, never real sleeps.
+- **Providers:** every registered provider must pass the shared Provider contract test.
+- **Externals:** GitHub and Claude Code payloads come from fixtures, and the test records that in its `no_claim`.
+- **Manual:** the readability spike, VoiceOver, Reduce Motion/Increase Contrast and the release checklist (notarized DMG, cask, Sparkle) are manual checks, written up rather than skipped.
