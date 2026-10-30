@@ -9,6 +9,7 @@ A macOS app that shows what needs your attention. A live ring in the Dock, a men
 - [`docs/designs/attn.md`](docs/designs/attn.md) — the design doc. It covers the problem, constraints, approved scope, the activity model, the provider/Sources architecture, the UI spec and tokens, and the decision ledgers from each review: office hours, CEO, eng (×3) and design.
 - [`docs/designs/ceo-plan.md`](docs/designs/ceo-plan.md) — accepted and deferred scope.
 - [`docs/designs/test-plan.md`](docs/designs/test-plan.md) — what has to be tested, with a value card for each test.
+- [`docs/designs/spike-report.md`](docs/designs/spike-report.md) — results of the readability and platform spike.
 - [`docs/designs/mockups/`](docs/designs/mockups/) — approved mockups: panel, live pill, first run and Settings › Sources. Where the mockups and the plan disagree, the plan wins.
 
 ## Where to start
