@@ -238,7 +238,6 @@ Before writing any app code, wire Claude Code's `UserPromptSubmit`, `PreToolUse`
 - You agreed to the premises and then added "I want to see iOS-style live activities in the dock, but not as a badge." That one line set the main UI.
 - Mid-session you asked whether notifications can be intercepted before they reach Notification Centre. You were testing the hardest constraint before accepting the workaround.
 
-<!-- gstack:office-hours:concerns:start -->
 ## Reviewer Concerns
 
 Disposition: COMPLETED
@@ -300,7 +299,6 @@ No blocking findings remain. The 4 open minor finding(s) below are recorded for 
 **R2-6 → R3-3 (persisting)**
 
 > Approach A is still sized M (~1 CC day) with four senders and Workroom-repo changes; Calendar permission only appears in Next Steps #5.
-<!-- gstack:office-hours:concerns:end -->
 
 ## Eng Review (/plan-eng-review, 2026-10-28)
 
@@ -326,8 +324,7 @@ Comparison grid:
 | Banners for needs-you | Workroom posts them | unchanged | unchanged | unchanged |
 | D3 structure (separate app) | approved D3=A | unchanged | unchanged | unchanged |
 Question D4:
-D4 — How should Workroom's own Dock count and menu bar list behave once it forwards to the attention app? <gstack-qid:plan-eng-review-duplicate-surfaces>
-Project/branch/task: eng review of the attention-companion design doc; Workroom at ~/dev/workroom.
+D4 — How should Workroom's own Dock count and menu bar list behave once it forwards to the attention app?Project/branch/task: eng review of the attention-companion design doc; Workroom at ~/dev/workroom.
 ELI10: You chose a separate app (D3). Workroom already counts each waiting agent request in its Dock badge and lists it in its menu bar item, so the same request would show twice: Workroom's badge and the new ring, and two menu bar lists. Workroom's existing switch, "Notify when a terminal needs me", turns off its alerts and its Dock count together, and the attention app posts no banners, so flipping it loses the banners. Its menu bar item can already be hidden on its own (MenuBarController.swift:80).
 Stakes if we pick wrong: every agent request shows in two places, which is the clutter this project exists to remove, or you lose the banner that tells you an agent is waiting.
 Recommendation: B because a small Workroom setting removes the duplicate count and list and keeps the banner, and the forwarder change is in Workroom anyway.
@@ -371,8 +368,7 @@ Comparison grid:
 | D2 EventKit | deferred (approved) | unchanged | unchanged |
 | D3 separate standalone app | approved | unchanged | unchanged |
 Question D5:
-D5 — Reopened: should Claude Code hooks be the agent sender in v1? <gstack-qid:plan-eng-review-hooks-v1-reopen>
-Project/branch/task: eng review of the standalone attention-app design doc.
+D5 — Reopened: should Claude Code hooks be the agent sender in v1?Project/branch/task: eng review of the standalone attention-app design doc.
 ELI10: You deferred hooks (D1) when I'd framed Workroom as already reporting agent status. You've since said the app is unrelated to Workroom and should work for anyone. A standalone app can't see what's happening inside someone's terminal, so Claude Code's hooks are the only way it learns an agent is running, waiting or done. Without them, v1 shows only GitHub items and whatever other apps push through `attn`, and agents were your first answer to "what needs you".
 Stakes if we pick wrong: keep deferring and v1 can't show the thing the Dock ring was designed around, an agent waiting on you.
 Recommendation: A because agents are the main source of "needs you" items and hooks are the only signal a standalone app can get from them.
@@ -411,8 +407,7 @@ Comparison grid:
 | R3 `attn` CLI install | on PATH by hand | bundled in the app; the app offers to symlink it into /usr/local/bin (or cask `binary` stanza) | bundled; symlink offered by the app | built and linked by the formula |
 | Paid Apple Developer membership | no | yes | yes | no |
 Question D6:
-D6 — How should anyone install and update the attention app? <gstack-qid:plan-eng-review-distribution>
-Project/branch/task: eng review of the standalone attention-app design doc.
+D6 — How should anyone install and update the attention app?Project/branch/task: eng review of the standalone attention-app design doc.
 ELI10: The doc still says "personal tool, build it yourself, no signing". You've said it should be useful for anyone. On someone else's Mac, an unsigned app downloaded from the web is blocked by Gatekeeper unless they bypass it, and the `attn` command needs to land on their PATH. Signing and notarizing need a paid Apple Developer membership. Updates either happen automatically (Sparkle), by hand, or through Homebrew.
 Stakes if we pick wrong: no signing means most people can't open it; no update path means every fix needs people to notice and reinstall.
 Recommendation: A because a signed, notarized download plus a Homebrew cask and Sparkle is the standard Mac path, and people expect it.
@@ -456,8 +451,7 @@ Comparison grid:
 | Hover shows target app | unspecified | yes (handler app name + icon) | n/a for app schemes | yes |
 | Socket uid check, URL-only (no commands) | approved | unchanged | unchanged | unchanged |
 Question D7:
-D7 — Which links can an item's Open button follow? <gstack-qid:plan-eng-review-open-schemes>
-Project/branch/task: eng review of the standalone attention-app design doc.
+D7 — Which links can an item's Open button follow?Project/branch/task: eng review of the standalone attention-app design doc.
 ELI10: Each item can carry a link that Open follows. Right now only web and file links are allowed, so an app like VS Code, Slack or Linear can't link back to the exact place in itself (`vscode://...`, `slack://...`). Only programs running as you can push items at all, and they could open any link themselves, so allowing app links adds convenience, not new access.
 Stakes if we pick wrong: too strict and most apps can only send people to a browser; a confirmation prompt per scheme adds friction for almost no extra safety.
 Recommendation: A because senders already run as the user, so any app link with an installed handler is safe to follow on a click, and it makes integrations land in the right place.
@@ -503,8 +497,7 @@ Comparison grid:
 | R5 `gh` missing or logged out | unspecified | poller off; Settings shows "GitHub: install gh / run gh auth login"; no errors in the panel | same as A | n/a |
 | D7 open links (https PR URLs) | approved | unchanged | unchanged | unchanged |
 Question D8:
-D8 — What should the GitHub poller watch, and when does an item clear? <gstack-qid:plan-eng-review-gh-poller>
-Project/branch/task: eng review of the standalone attention-app design doc.
+D8 — What should the GitHub poller watch, and when does an item clear?Project/branch/task: eng review of the standalone attention-app design doc.
 ELI10: The doc says the poller shows review requests and failed checks and clears them when checks go green or the PR is approved, but not which GitHub API it uses or how often. The simplest source is GitHub's notifications feed: one request per minute or less, free when nothing changed, and the item clears when you read or finish the thread on GitHub. Checking every PR's checks directly gives "clears when green" exactly, but costs a call per PR every cycle. Many people won't have `gh` installed, so the poller has to switch off quietly.
 Stakes if we pick wrong: per-PR polling can hit rate limits for busy users; notifications-only means a failed-check item stays until you open it on GitHub, even after a re-run passes.
 Recommendation: A because one cheap, rate-limit-friendly feed covers review requests and CI failures, and "read on GitHub" is a resolution signal people already produce.
@@ -548,8 +541,7 @@ Comparison grid:
 | Revisionless ordering (arrival) | approved | unchanged | unchanged | unchanged | unchanged |
 | R7 ack precondition | pending | pending | pending | pending | pending |
 Question D9:
-D9 — Should a repeated "still waiting" push bring back a request you already opened? <gstack-qid:plan-eng-review-ov-repeat-push>
-Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O1).
+D9 — Should a repeated "still waiting" push bring back a request you already opened?Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O1).
 ELI10: Senders often repeat themselves: an agent that's still waiting may send "waiting" again a minute later. Under the current rule, every repeat makes the item demand your attention again, even if you just opened it. The fix: only a change into "waiting" or "error" raises attention. A repeat of the same state just refreshes the item, unless the sender marks it as a genuinely new request with a newer revision.
 Stakes if we pick wrong: items you've already dealt with keep lighting up the ring, which trains people to ignore it.
 Recommendation: A because only a real change of state should demand attention, and senders with distinct requests can say so with a revision.
@@ -599,8 +591,7 @@ Comparison grid:
 | R7 failed Open | unspecified | `NSWorkspace.open` failure leaves attention set and shows an inline error on the row | ack anyway | investigate first | defer |
 | D9 attention on state change | approved | unchanged | unchanged | unchanged | unchanged |
 Question D10:
-D10 — Should clicking an item only clear the request you actually saw? <gstack-qid:plan-eng-review-ov-ack-revision>
-Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O2).
+D10 — Should clicking an item only clear the request you actually saw?Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O2).
 ELI10: Between the panel drawing an item and your click arriving, the sender can push a new request into the same item. Today the click would clear that new request too, one you never saw. The fix: each item remembers which version was on screen, and a click only clears that version. If the link fails to open, the item stays lit with an error on the row.
 Stakes if we pick wrong: a new request can vanish unseen, which is the one failure this app exists to prevent.
 Recommendation: A because it's a revision compare the store already needs, and it closes the only path to silently losing a request.
@@ -650,8 +641,7 @@ Comparison grid:
 | R8 already `unknown` items | reset to a fresh grace period | stay `unknown` across wake and relaunch | reset | investigate first | defer |
 | R8 app relaunch | clocks restart | silence = wall time since the item's last heartbeat (persisted) | clocks restart | investigate first | defer |
 Question D11:
-D11 — How should "no update" timing treat sleep and app restarts? <gstack-qid:plan-eng-review-ov-heartbeat-clock>
-Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O3).
+D11 — How should "no update" timing treat sleep and app restarts?Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O3).
 ELI10: A running item turns "no update" if its sender goes quiet for too long. The doc restarts every timer when the Mac wakes or the app relaunches, so a sender that already died gets a fresh grace period and looks alive again. Swift has a clock that simply pauses while the Mac sleeps, so sleep can be ignored without restarting anything. Items already marked "no update" stay that way, and after a relaunch the app counts from each item's last saved heartbeat.
 Stakes if we pick wrong: a dead agent can show as running for another full timeout after every wake or restart.
 Recommendation: A because a sleep-pausing clock removes the need to reset, so stale items stay stale and sleep never causes false alarms.
@@ -701,8 +691,7 @@ Comparison grid:
 | R9 promise in the doc | "one look tells you whether Claude in pane 3 is waiting" | the ring answers "does something need me, how urgent"; the panel answers "which one" | unchanged | unchanged | unchanged |
 | Next Steps order | spike → store → CLI → panel → senders | unchanged order, wider spike | unchanged | unchanged | unchanged |
 Question D12:
-D12 — Should the first spike prove the ring is readable at real Dock sizes, not just that it draws? <gstack-qid:plan-eng-review-ov-ring-readability>
-Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O4).
+D12 — Should the first spike prove the ring is readable at real Dock sizes, not just that it draws?Project/branch/task: eng review of the standalone attention-app design doc (outside-voice finding O4).
 ELI10: The first build step only checks that the ring draws. The doc promises much more: that one glance tells you which agent is waiting. At normal Dock size, a ring of up to six thin segments and one letter may not be readable. Widening the spike to show the ring at real sizes with several similar items, before building anything else, tests that promise cheaply. The doc would also say the ring tells you "something needs me, and how urgently", while the panel tells you which.
 Stakes if we pick wrong: the store, CLI and release pipeline get built around a Dock indicator nobody can read at a glance.
 Recommendation: A because it tests the product's central claim with a one-file spike before investing in everything else.
@@ -909,8 +898,7 @@ Commitment comparison:
 | Distribution (signed, cask, Sparkle) | D6=A | approved | unchanged | unchanged | unchanged |
 | Generic `attn` CLI for any app | approved | approved | unchanged | unchanged | unchanged |
 
-Question: D1 — CEO-1: Should v1 ship with a built-in source so it does something on install? <gstack-qid:plan-ceo-review-v1-sender>
-Project/branch/task: CEO review of the standalone attention-app design doc.
+Question: D1 — CEO-1: Should v1 ship with a built-in source so it does something on install?Project/branch/task: CEO review of the standalone attention-app design doc.
 ELI10: As planned, v1 is a Dock ring and menu bar panel that stay empty until someone writes their own script to call `attn`. Free tools like AnyBar and SwiftBar already let scripts light up the menu bar, so an empty v1 mostly offers a nicer surface. Shipping one real source turns it into something useful the moment it's installed. Claude Code hooks are the smallest one: one setup command, and the ring shows agents running, waiting and done.
 Stakes if we pick wrong: people install it, see nothing, and uninstall; the polished release pipeline ships a product with no first-run value.
 Recommendation: B because one built-in source gives v1 its first-run value for the audience most likely to want it, at about a day of work, while GitHub can follow.
@@ -932,8 +920,7 @@ Commitment comparison:
 | CEO-1 hooks in v1 | approved CEO D1 | unchanged | unchanged | unchanged | unchanged |
 | Other candidates E2–E9 | pending | pending | pending | pending | pending |
 
-Question: D3 — E1: Should the app tap you with its own banner when something starts needing you? <gstack-qid:plan-ceo-review-e1-banner>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D3 — E1: Should the app tap you with its own banner when something starts needing you?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: Right now the app only changes the Dock ring and the menu bar. If you're looking at another screen or the Dock is hidden, an agent waiting on you goes unnoticed. A single banner the moment something gains attention (and never again for the same request) closes that gap; critical items can break through as time-sensitive.
 Stakes if we pick wrong: without it, the main use case (an agent waiting) can sit unseen; with a sloppy version, the app becomes another source of banner noise.
 Recommendation: A because one banner per new request is the minimum alert a waiting agent needs, and the attention rules (D9) already stop repeats.
@@ -955,8 +942,7 @@ Commitment comparison:
 | E1 own banner | approved CEO D3 | unchanged | unchanged | unchanged | unchanged |
 | E3 AI triage | pending, depends on E2 | pending | pending | pending | irrelevant if C |
 
-Question: D4 — E2: Should v1 also pull in your existing Notification Centre notifications (Slack, Messages, Mail)? <gstack-qid:plan-ceo-review-e2-store>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D4 — E2: Should v1 also pull in your existing Notification Centre notifications (Slack, Messages, Mail)?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: This is your original pain: dozens of stale notifications you never open. The app can read the notification store (it needs Full Disk Access), so chat and mail land in the same list, and you can switch off banners app by app once they're arriving reliably. It's undocumented by Apple, so a macOS update can break it; the plan already says to show a loud warning if it does. Three facts are still unverified: whether apps set to "None" still reach the store, how fast new rows appear, and whether urgency is stored.
 Stakes if we pick wrong: leaving it out means v1 doesn't touch the clutter that started this; putting it in early means v1 rests on an undocumented store before those three facts are checked.
 Recommendation: B because the three unverified store facts decide how it works, and the 10-minute probe (Next Steps #6) should run before v1 commits to it.
@@ -978,8 +964,7 @@ Commitment comparison:
 | CEO-1 hooks, E1 banner | approved | unchanged | unchanged | unchanged | unchanged |
 | E2 store, E3 AI | deferred (D4; E3 follows E2) | unchanged | unchanged | unchanged | unchanged |
 
-Question: D5 — E4: Should v1 also watch GitHub for review requests, CI failures and mentions? <gstack-qid:plan-ceo-review-e4-github>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D5 — E4: Should v1 also watch GitHub for review requests, CI failures and mentions?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: In the eng review you cut the GitHub poller from v1 (D8). In expansion mode it's back on the table: using the `gh` tool people already have, the app checks GitHub's notifications feed about once a minute (free when nothing changed) and shows review requests, failed CI and mentions as items that clear when you read them on GitHub. People without `gh` just don't get it.
 Stakes if we pick wrong: without it, v1 only helps Claude Code users; with it, v1 carries a second external API before anyone has tried the first.
 Recommendation: A because code review and CI are the second-biggest "needs you" source and the notifications feed is cheap and rate-limit-friendly, so v1 is useful beyond Claude Code.
@@ -1000,8 +985,7 @@ Commitment comparison:
 | Codex sender | pending (E5); Codex `notify` payload unverified | none | `attn setup codex`: adds a `notify` program to ~/.codex/config.toml after showing the change; maps turn-complete to `done`; first build step verifies the payload fields | follow-up (TODOS) after verifying what Codex reports | none |
 | CEO-1 hooks, E1 banner, E4 GitHub feed | approved | unchanged | unchanged | unchanged | unchanged |
 
-Question: D6 — E5: Should v1 also support Codex with an `attn setup codex` command? <gstack-qid:plan-ceo-review-e5-codex>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D6 — E5: Should v1 also support Codex with an `attn setup codex` command?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: Claude Code gets full running/waiting/done tracking through its hooks. Codex has a simpler hook: it can run a program when a turn finishes. That likely gives "done" but probably not "waiting on you" or "running", and I haven't verified exactly what it sends. A setup command like the Claude one would add it for Codex users.
 Stakes if we pick wrong: in v1 without it, Codex users see nothing from their agent; with it, they may only see "done", which is less than the ring promises.
 Recommendation: B because Codex's hook payload is unverified and probably only reports turn completion, so it should follow once its fields are checked.
@@ -1023,8 +1007,7 @@ Commitment comparison:
 | D12 readability spike | approved | ring only | ring + pill rendered together | ring only | ring only |
 | Other approved scope | approved | unchanged | unchanged | unchanged | unchanged |
 
-Question: D7 — E6: Should v1 add an iOS-style floating "live activity" pill under the notch? <gstack-qid:plan-ceo-review-e6-pill>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D7 — E6: Should v1 add an iOS-style floating "live activity" pill under the notch?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: The Dock ring is a small square, so it can show whether something needs you but not what. A slim pill under the notch, like iOS's Dynamic Island, can show the top live item in words ("Claude · waiting · 2m") and expand to the top three on hover. This is the closest thing to the "iOS-style live activities" you asked for at the start, and it hides when nothing is live.
 Stakes if we pick wrong: without it, "which one" always needs a click into the panel; with it, v1 adds a third surface to design and keep out of the way.
 Recommendation: A because it delivers the live-activity feel you originally asked for and answers "which one" without a click, which the readability spike (D12) showed the ring alone can't promise.
@@ -1045,8 +1028,7 @@ Commitment comparison:
 | Global hotkey | pending (E7) | none | a user-set global shortcut (no default that clashes) opens the panel with the top item selected; Return = Open, ⌫ = Dismiss, arrows move | follow-up (TODOS) | none |
 | Panel, Open/Dismiss rules (D10) | approved | unchanged | unchanged | unchanged | unchanged |
 
-Question: D8 — E7: Should a keyboard shortcut open the panel with the top item ready to open? <gstack-qid:plan-ceo-review-e7-hotkey>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D8 — E7: Should a keyboard shortcut open the panel with the top item ready to open?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: When the ring says something needs you, today you reach for the mouse and the menu bar. A shortcut you choose would open the panel with the most urgent item selected: Return takes you there, Delete dismisses it, arrows move through the list. It's the fastest path from "something needs me" to being there.
 Stakes if we pick wrong: small either way; without it, keyboard-first users pay a mouse trip for every request.
 Recommendation: A because it's small, it uses the D10 Open/Dismiss rules unchanged, and it makes the core loop keyboard-fast for developers.
@@ -1067,8 +1049,7 @@ Commitment comparison:
 | Focus-aware attention | pending (E8) | Focus ignored | while a macOS Focus is on, only `critical` items raise attention and banners; others still update the panel and pill quietly and light up when Focus ends | follow-up (TODOS) | none |
 | E1 banner (critical = time-sensitive) | approved | unchanged | unchanged | unchanged | unchanged |
 
-Question: D9 — E8: Should macOS Focus quiet everything except critical items? <gstack-qid:plan-ceo-review-e8-focus>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D9 — E8: Should macOS Focus quiet everything except critical items?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: When you turn on a Focus (Do Not Disturb, Work, and so on), you're saying "only interrupt me for what matters". The app would respect that: during Focus only critical items light the ring and post a banner; everything else still lands in the panel quietly and lights up when Focus ends. Whether the app can read Focus state reliably needs a check in the first build step.
 Stakes if we pick wrong: without it, the app ignores the one signal people use to say "not now"; with it, a misread Focus state could hide a waiting agent.
 Recommendation: B because whether a third-party app can read the current Focus state reliably is unverified, and a wrong read hides the thing the app exists to show.
@@ -1089,8 +1070,7 @@ Commitment comparison:
 | Snooze | pending (E9) | none | Snooze (15 min / 1 h / tomorrow 9:00) clears attention now and raises it again at that time unless the item was resolved, expired or dismissed; snoozed items show a clock in Live; time measured on wall clock | follow-up (TODOS) | none |
 | D9 attention rules, D10 ack rules | approved | unchanged | unchanged | unchanged | unchanged |
 
-Question: D10 — E9: Should you be able to snooze an item so it comes back later? <gstack-qid:plan-ceo-review-e9-snooze>
-Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
+Question: D10 — E9: Should you be able to snooze an item so it comes back later?Project/branch/task: CEO review (SCOPE EXPANSION) of the standalone attention-app design doc.
 ELI10: Some requests need you, just not now: a PR review you'll do after lunch. Today your only choices are to leave it lit or dismiss it and risk forgetting. Snooze clears it now and brings it back at the time you pick, unless it's already been resolved or expired by then.
 Stakes if we pick wrong: small; without it, people either live with a lit ring or dismiss things they meant to come back to.
 Recommendation: A because it's small, fits the existing attention rules, and stops "not now" items from either nagging or getting lost.
@@ -1121,8 +1101,7 @@ Commitment comparison:
 | On version mismatch or decode failure | pending (U1) | unspecified (silent loss) | migrate known older versions; unknown or corrupt → move file aside, start empty, show "history reset after update" in Recent | move file aside, start empty, show "history reset after update" in Recent | unspecified |
 | Live items after reset | pending | lost silently | kept when migrated; senders re-push on next event otherwise | senders re-push on next event | lost silently |
 
-Question: D12 — U1: What happens to saved items if an app update changes the store format? <gstack-qid:plan-ceo-review-u1-store-version>
-Project/branch/task: CEO review, Section 2 (error map) of the attention app.
+Question: D12 — U1: What happens to saved items if an app update changes the store format?Project/branch/task: CEO review, Section 2 (error map) of the attention app.
 ELI10: The app saves its live items to a file. With Sparkle auto-updates, a new version may store items differently. If it can't read the old file, today's plan says nothing, so items would vanish without a word. Items are short-lived and senders re-push on their next event, so the loss is small, but it shouldn't be silent.
 Stakes if we pick wrong: after an update, waiting agents disappear from the ring with no explanation until they next push.
 Recommendation: B because a version check plus a visible reset covers the failure cheaply, and items are short-lived enough that migrations aren't worth their code yet.
@@ -1143,8 +1122,7 @@ Commitment comparison:
 | `attn doctor` command | pending (OBS-1) | none | prints: app running, socket reachable, Claude hooks installed and path valid, gh found and logged in, notification permission, last event time per source; exit 0 when healthy, 1 otherwise | none |
 | Settings status lines (gh, hooks) | approved (CEO spec pass) | unchanged | unchanged | unchanged |
 
-Question: D13 — OBS-1: Add an `attn doctor` command for "why isn't anything showing up"? <gstack-qid:plan-ceo-review-obs-doctor>
-Project/branch/task: CEO review, Section 8 (observability) of the attention app.
+Question: D13 — OBS-1: Add an `attn doctor` command for "why isn't anything showing up"?Project/branch/task: CEO review, Section 8 (observability) of the attention app.
 ELI10: For a product anyone installs, the most common support question will be "I set it up and nothing appears". The causes are few: the app isn't running, the hooks point at a moved app, gh is logged out, banners are off. One command that checks each and says which is wrong turns that into a 10-second fix, and gives bug reports something concrete to paste.
 Stakes if we pick wrong: without it, an empty ring looks the same whether everything is fine or everything is broken.
 Recommendation: A because it is small, reuses checks the app already makes for Settings, and answers the first-run failure an app for anyone will hit most.
@@ -1177,8 +1155,7 @@ Commitment comparison:
 | Newer `updated_at` on a thread | CEO spec pass (revision = updated_at), D5 | re-raises attention for all reasons | re-raises only for `review_requested` and `assign`; `mention` and `ci_activity` raise on first appearance, later updates refresh text only | unchanged | investigate GitHub's reason behaviour first | defer; current rule stays |
 | Failed CI on a later run of the same thread | CEO spec pass | re-raises | re-raises when the fetched conclusion changes to failure | unchanged | pending | unchanged |
 
-Question: D14 — OV-1: Should every new comment on a thread you were once mentioned in light up the ring again? <gstack-qid:plan-ceo-review-ov1-mention>
-Project/branch/task: CEO review outside voice (Codex) on the attention app's GitHub feed.
+Question: D14 — OV-1: Should every new comment on a thread you were once mentioned in light up the ring again?Project/branch/task: CEO review outside voice (Codex) on the attention app's GitHub feed.
 ELI10: GitHub keeps a thread's reason as "mention" after you're mentioned once, so every later comment updates it. Under the current rule, each update lights the ring again, even when nobody mentioned you again: the noise this app exists to remove. The fix: review requests and assignments still re-raise on updates; mentions raise once, and later activity just refreshes the item. A CI thread raises again only when a later run actually fails.
 Stakes if we pick wrong: busy threads keep demanding attention for comments that aren't for you, or a second real mention arrives quietly.
 Recommendation: A because the reason field can't tell a new mention from a reply, and a quiet refresh is the safer default for an app meant to cut noise.
@@ -1201,8 +1178,7 @@ Commitment comparison:
 | Banner timing for non-critical items | CEO spec pass (D3 detail) | post immediately; replace with summary at the 3rd within 2 s | hold 2 s; then post individually, or one summary if 3+ gained attention in the window | unchanged (contradictory) | investigate first | defer; current wording stays |
 | Banner timing for critical items | D3 | immediate | immediate | immediate | immediate | immediate |
 
-Question: D15 — OV-5: Should ordinary banners wait 2 seconds so a burst becomes one summary? <gstack-qid:plan-ceo-review-ov5-banner-batch>
-Project/branch/task: CEO review outside voice (Codex) on the attention app's banners.
+Question: D15 — OV-5: Should ordinary banners wait 2 seconds so a burst becomes one summary?Project/branch/task: CEO review outside voice (Codex) on the attention app's banners.
 ELI10: The plan says banners post right away, but that three arriving within 2 seconds become one summary. That can't both happen: by the time the third arrives, the first two have already popped up. Holding ordinary banners for 2 seconds makes the summary real. Critical items still post instantly.
 Stakes if we pick wrong: a burst (several agents finishing together) pops several banners at once, the clutter this app exists to remove; or ordinary banners feel 2 seconds late.
 Recommendation: A because a 2-second delay on non-critical banners is unnoticeable, and it's the only way the promised summary can work.
@@ -1352,8 +1328,7 @@ Comparison grid:
 | D1 app owns mapping | approved | unchanged | unchanged |
 | 200 ms bound, exit 0 | approved | unchanged | unchanged |
 Question D2:
-D2 — Should `attn hook claude` forward only the few fields the app needs, instead of Claude's whole hook payload? <gstack-qid:plan-eng-review-hook-payload>
-Project/branch/task: eng re-review of the attention app (hook forwarding after D1).
+D2 — Should `attn hook claude` forward only the few fields the app needs, instead of Claude's whole hook payload?Project/branch/task: eng re-review of the attention app (hook forwarding after D1).
 ELI10: Claude's hook data includes the full output of every tool (a big file it just read) and the text of your prompts. Passing all of that to the app on every event is slow and pointless: the app only needs the session, the event name, the notification type and its short message. Copying just those fields keeps hooks fast and keeps your prompts and code out of the app's saved data. The app still owns all the rules.
 Stakes if we pick wrong: hooks slow down on big tool outputs, and private prompt or code text can end up stored in the app's data folder.
 Recommendation: A because a fixed field list keeps every hook inside the 200 ms limit and never moves private text, while the app still owns the rules (D1).
@@ -1391,8 +1366,7 @@ Comparison grid:
 | R11 forward agent_id | no | yes; tool events carrying an agent_id refresh the heartbeat only and never clear the main session's waiting | no | verify in spike first | defer |
 | D2 field subset otherwise | approved | unchanged | unchanged | unchanged | unchanged |
 Question D3:
-D3 — Should hooks also forward which subagent an event came from, so a background subagent can't clear a waiting permission prompt? <gstack-qid:plan-eng-review-ro1-agent-id>
-Project/branch/task: eng re-review outside voice on the attention app's hook forwarding.
+D3 — Should hooks also forward which subagent an event came from, so a background subagent can't clear a waiting permission prompt?Project/branch/task: eng re-review outside voice on the attention app's hook forwarding.
 ELI10: When Claude runs helpers (subagents), their tool events look like the main agent's unless we keep their agent ID. Then a helper finishing a tool could make the app think you answered a permission prompt, and the item would quietly stop asking for you. Forwarding the agent ID lets the app ignore helper activity for that purpose.
 Stakes if we pick wrong: a permission prompt can stop showing as "needs you" while it's still waiting.
 Recommendation: A because it's one extra field and it prevents the app from clearing a real request on someone else's activity.
@@ -1442,8 +1416,7 @@ Comparison grid:
 | R12 known older schema | start empty | migrate in place (one migration + test per schema change) | start empty | investigate first | defer |
 | R12 unknown or corrupt file | move aside, start empty | move aside (kept), start empty, notice says open requests may be missing | unchanged | unchanged | unchanged |
 Question D4:
-D4 — Reopened: should app updates migrate saved items instead of resetting them? <gstack-qid:plan-eng-review-ro2-store-migrate>
-Project/branch/task: eng re-review outside voice on the attention app's store format (reopens CEO D12).
+D4 — Reopened: should app updates migrate saved items instead of resetting them?Project/branch/task: eng re-review outside voice on the attention app's store format (reopens CEO D12).
 ELI10: In the CEO review I said items lost in a store reset would come back when their sender next pushed. That's wrong for the most important case: an agent already waiting on your permission sends nothing until you answer. So a reset after an update would silently drop the very requests the app exists to show. Migrating the saved file when the format changes keeps them; a corrupt file is still set aside safely.
 Stakes if we pick wrong: after an auto-update, an agent waiting on you vanishes from the ring and nothing brings it back.
 Recommendation: A because a waiting agent never re-announces itself, so only a migration keeps open requests across updates.
@@ -1493,8 +1466,7 @@ Comparison grid:
 | R13 StopFailure | not installed | install; maps to `error` + attention (severity high) | not installed | verify in spike first | defer |
 | Other hook mappings | approved | unchanged | unchanged | unchanged | unchanged |
 Question D5:
-D5 — Should a Claude session that stops on an error (API, auth or rate limit) light up as needing you? <gstack-qid:plan-eng-review-ro3-stopfailure>
-Project/branch/task: eng re-review outside voice on the attention app's Claude hook mapping.
+D5 — Should a Claude session that stops on an error (API, auth or rate limit) light up as needing you?Project/branch/task: eng re-review outside voice on the attention app's Claude hook mapping.
 ELI10: When Claude stops because of an API, sign-in or rate-limit error, it sends a different event (StopFailure) instead of the normal "finished" one. The app doesn't listen for it, so the agent keeps showing as running until it times out to "no update", and never tells you it needs you. Listening for it and showing an error item fixes that.
 Stakes if we pick wrong: an agent that died on an error looks like it's still working for ten minutes, then just goes grey.
 Recommendation: A because a failed agent needs you just as much as a waiting one, and it's one more hook entry.
@@ -1673,24 +1645,6 @@ Plan is design-complete. Run /design-review after implementation for visual QA.
 
 Unresolved design decisions: none.
 
-### Prior report (superseded)
-GSTACK REVIEW REPORT (eng re-review, superseded)
-
-| Review | Trigger | Why | Runs | Status | Findings |
-|--------|---------|-----|------|--------|----------|
-| CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | ISSUES OPEN | 9 proposals, 5 accepted, 4 deferred |
-| Outside Review | codex (gpt-6-astra) via `/plan-eng-review` and `/plan-ceo-review` | Independent 2nd opinion | 3 | completed | eng re-review: 4 findings; 4 resolved; 0 unresolved. CEO: 5 findings, 1 open (OV-1). First eng: 4 findings, all resolved |
-| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 2 | ISSUES OPEN | 14 issues, 0 critical gaps |
-| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
-| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
-
-- **OUTSIDE COVERAGE:** codex gpt-6-astra, plan-review phase, completed three times (first eng: 4 findings; CEO: 5 findings, 1 open; eng re-review: 4 findings, all resolved).
-- **CROSS-MODEL:** the native re-review caught the hook payload size and privacy problem (D2); Codex caught subagent identity, migration loss, StopFailure and CI retry. No disagreements remain.
-- **VERDICT:** nothing CLEAR yet. The eng re-review has no unresolved decisions of its own and no critical gaps; it shows ISSUES OPEN because its findings are mapped to tasks. The CEO review's OV-1 waits on the spike. Next: design review for onboarding and accessibility.
-
-**UNRESOLVED DECISIONS:**
-- + 1 unresolved from prior reviews
-
 ## Eng Review 3: Sources/provider model (/plan-eng-review, 2026-10-30)
 
 Scope record: no cuts (user requirement). Structure D1 = A: built-in providers behind one Swift `Provider` protocol plus a registry; no plugin system. Scope accepted as-is. Reality rows: `PLAN_REALITY: phase=eng rows=7/7 missing=none unverified=9 verdict=complete`.
@@ -1726,37 +1680,3 @@ Critical gaps: 0.
   - Verify: reserved id rejected; muted pushes ignored with exit 0 and the mute persists across relaunch
 
 Completion summary (eng review 3): scope accepted as-is; Architecture 2 issues; Code quality 0; Tests 4 gaps (planned); Performance 0; critical gaps 0; unresolved 0 (+1 from CEO: OV-1); outside voice completed, 2 findings applied as repairs; Lake Score 2/2.
-
-### Prior report (superseded)
-GSTACK REVIEW REPORT (design review, superseded)
-
-| Review | Trigger | Why | Runs | Status | Findings |
-|--------|---------|-----|------|--------|----------|
-| CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | ISSUES OPEN | 9 proposals, 5 accepted, 4 deferred |
-| Outside Review | codex (gpt-6-astra) via `/plan-eng-review` and `/plan-ceo-review` | Independent 2nd opinion | 3 | completed | 13 findings across 3 runs; 12 resolved; 1 unresolved (OV-1) |
-| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 2 | ISSUES OPEN | 14 issues, 0 critical gaps |
-| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR | score: 3/10 → 8/10, 7 decisions |
-| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
-
-- **OUTSIDE COVERAGE:** design outside voices were declined by the user (D2), so there is no design-phase outside coverage. The 3 Codex runs above were plan reviews in the eng and CEO phases.
-- **VERDICT:** DESIGN CLEARED. Eng review is ISSUES OPEN (findings mapped to tasks, 0 unresolved of its own), so eng review is still required.
-
-**UNRESOLVED DECISIONS:**
-- + 1 unresolved from prior reviews
-
-## GSTACK REVIEW REPORT
-
-| Review | Trigger | Why | Runs | Status | Findings |
-|--------|---------|-----|------|--------|----------|
-| CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | ISSUES OPEN | 9 proposals, 5 accepted, 4 deferred |
-| Outside Review | codex (gpt-6-astra) via `/plan-eng-review` and `/plan-ceo-review` | Independent 2nd opinion | 4 | completed | latest run (provider model): 2 findings; 2 resolved; 0 unresolved. All runs: 15 findings, 14 resolved, 1 open (OV-1) |
-| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 3 | ISSUES OPEN | 6 issues, 0 critical gaps |
-| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR | score: 3/10 → 8/10, 7 decisions |
-| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
-
-- **OUTSIDE COVERAGE:** codex gpt-6-astra, plan-review phase, completed for this eng review (2 findings, both applied). The design phase's outside voices were declined.
-- **CROSS-MODEL:** the native review settled the structure (built-in protocol) and the removal and mute semantics. Codex found the identity namespace and teardown-ordering gaps the native pass missed. No disagreements remain.
-- **VERDICT:** DESIGN CLEARED. Eng review is ISSUES OPEN (all findings are mapped to tasks, with 0 unresolved and 0 critical gaps of its own); the only open item is the CEO review's OV-1, which waits on the spike.
-
-**UNRESOLVED DECISIONS:**
-- + 1 unresolved from prior reviews
